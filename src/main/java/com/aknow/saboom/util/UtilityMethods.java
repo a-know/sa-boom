@@ -14,6 +14,9 @@ import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailServiceFactory;
+import com.google.appengine.api.mail.MailService.Message;
 
 @SuppressWarnings("deprecation")
 public class UtilityMethods {
@@ -94,5 +97,19 @@ public class UtilityMethods {
         }
 
         return true;
+    }
+    
+    public static Exception sendAlertMail(String className, Exception e) throws IOException{
+        Message message = new Message();
+        message.setSender(PrivateConsts.ALERT_MAIL_SENDER);
+        message.setTo(PrivateConsts.ALERT_MAIL_TO);
+
+        message.setSubject(className);
+        message.setTextBody(e.toString() + "\n" + e.getMessage());
+
+        MailService mailService = MailServiceFactory.getMailService();
+        mailService.send(message);
+        
+        return e;
     }
 }
