@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+<cron>
+<url>/calcTotalPlayCountByArtist</url>
+<description>calcuration to total playcount by artist</description>
+<schedule>every day 01:35</schedule>
+<timezone>Asia/Tokyo</timezone>
+</cron>
+</cronentries>

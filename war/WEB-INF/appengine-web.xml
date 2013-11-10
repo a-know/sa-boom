@@ -4,7 +4,15 @@
   <version>100</version>
 
   <static-files>
-    <include path="/**.*"/>
+    <include path="/css/*.css" />
+    <include path="/images/*.png" />
+    <include path="/images/*.gif" />
+    <include path="/images/*.jpg" />
+    <include path="/js/*.js" />
+    <include path="/js/dist/plugins/*.js" />
+    <include path="/js/dist/plugins/*.css" />
+    <include path="/js/dist/*.js" />
+    <include path="/images/favicon.ico" />
   </static-files>
   
   <precompilation-enabled>true</precompilation-enabled>
