@@ -1,5 +1,8 @@
 package com.aknow.saboom.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.arnx.jsonic.JSON;
 
 import org.slim3.controller.Controller;
@@ -21,8 +24,12 @@ public class DeleteInfoController extends Controller {
             String loginID = this.request.getParameter("loginID");
 
             DeleteInfoService service = new DeleteInfoService();
+            service.deleteInfo(date, loginID);
+            
+            Map<String, Boolean> result = new HashMap<>();
+            result.put("result", Boolean.TRUE);
 
-            JSON.encode(service.deleteInfo(date, loginID), this.response.getOutputStream());
+            JSON.encode(result, this.response.getOutputStream());
         }catch(Exception e){
             throw UtilityMethods.sendAlertMail(this.getClass().getName(), e);
         }
