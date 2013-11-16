@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Future;
 
 import org.slim3.datastore.Datastore;
 
@@ -23,14 +24,16 @@ import com.aknow.saboom.model.TotalPlayCountByArtist;
 import com.aknow.saboom.model.User;
 import com.aknow.saboom.util.AmazonHelper;
 import com.aknow.saboom.util.FreshPub;
+import com.google.appengine.api.datastore.Key;
 
 
 public class IndexService {
 
     @SuppressWarnings("static-method")
-    public ArrayList<Activity> getActivity() {
+    public Future<List<Activity>> getActivity() {
         ActivityMeta meta = ActivityMeta.get();
-        return (ArrayList<Activity>) Datastore.query(meta).filter(meta.viewable.equal(Boolean.TRUE)).sort(meta.activityDate.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.viewable.equal(Boolean.TRUE)).sort(meta.activityDate.desc).limit(10).asKeyList();
+        return (Future<List<Activity>>) Datastore.getAsync(Activity.class, keyList);
     }
 
     @SuppressWarnings("static-method")
@@ -216,27 +219,27 @@ public class IndexService {
     }
 
     @SuppressWarnings("static-method")
-    public List<User> userRankingOfUploadCount(){
+    public Future<List<User>> userRankingOfUploadCount(){
         UserMeta meta = new UserMeta();
-        List<User> list = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.uploadCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.uploadCount.desc).limit(10).asKeyList();
 
-        return list;
+        return Datastore.getAsync(User.class, keyList);
     }
 
     @SuppressWarnings("static-method")
-    public List<User> userRankingOfAccessCount(){
+    public Future<List<User>> userRankingOfAccessCount(){
         UserMeta meta = new UserMeta();
-        List<User> list = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.accessCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.accessCount.desc).limit(10).asKeyList();
 
-        return list;
+        return Datastore.getAsync(User.class, keyList);
     }
 
     @SuppressWarnings("static-method")
-    public List<User> userRankingOfDiaryCount(){
+    public Future<List<User>> userRankingOfDiaryCount(){
         UserMeta meta = new UserMeta();
-        List<User> list = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.diaryCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.diaryCount.desc).limit(10).asKeyList();
 
-        return list;
+        return Datastore.getAsync(User.class, keyList);
     }
 
     public List<Object> getRankingDataByArtistFirst(){
