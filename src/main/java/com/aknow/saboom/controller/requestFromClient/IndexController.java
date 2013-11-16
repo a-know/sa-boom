@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 
-import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailServiceFactory;
-import com.google.appengine.api.mail.MailService.Message;
 import com.aknow.saboom.service.withClient.KeyRequestService;
 import com.aknow.saboom.service.withClient.LoginCheckRequestService;
 import com.aknow.saboom.service.withClient.PlayCountDataRecieveService;

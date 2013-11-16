@@ -22,11 +22,7 @@ import com.aknow.saboom.service.graph.GetRandomArtistRankingGraphService;
 import com.aknow.saboom.service.graph.GetSaboomPlayCountGraphDataByUserService;
 import com.aknow.saboom.service.graph.GetUserRankingGraphService;
 import com.aknow.saboom.util.Consts;
-import com.aknow.saboom.util.PrivateConsts;
 import com.aknow.saboom.util.UtilityMethods;
-import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailService.Message;
-import com.google.appengine.api.mail.MailServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
