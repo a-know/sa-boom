@@ -28,6 +28,9 @@ import com.google.appengine.api.datastore.Key;
 
 
 public class IndexService {
+	
+    private static Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
+    private static final String separater = "@@##@@";
 
     @SuppressWarnings("static-method")
     public Future<List<Activity>> getActivity() {
@@ -70,7 +73,6 @@ public class IndexService {
     @SuppressWarnings("static-method")
     public ArrayList<List<String>> getDataFromApi(int limit, String artistName, List<String> urlList, List<String> imageUrlList){
 
-        String separater = "@@##@@";
         StringBuffer artistBuffer = new StringBuffer(separater);
         artistBuffer.append(artistName);
         artistBuffer.append(separater);
@@ -118,7 +120,6 @@ public class IndexService {
     @SuppressWarnings("static-method")
     public List<String> getTop10ArtistDataList(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
 
@@ -177,7 +178,6 @@ public class IndexService {
     @SuppressWarnings("static-method")
     public ArrayList<HashMap<String, String>> getDataFromApi(HashMap<String, String> urlMap, HashMap<String, String> imageUrlMap){
         //TODO 全く同じメソッドがUserViewServiceにもあり。共通化要
-        String separater = "@@##@@";
         StringBuffer artistBuffer = new StringBuffer(separater);
 
 
@@ -244,7 +244,6 @@ public class IndexService {
 
     public List<Object> getRankingDataByArtistFirst(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
 
@@ -352,7 +351,6 @@ public class IndexService {
 
     public List<Object> getRankingDataByArtistSecond(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = null;
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH)).toString();
         if("0".equals(current_month)){
@@ -378,7 +376,6 @@ public class IndexService {
 
     public List<Object> getRankingDataByArtistThird(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = null;
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
         if("0".equals(current_month)){
