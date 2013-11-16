@@ -31,9 +31,9 @@ public class IndexController extends Controller {
             if(userRankingOfUploadCountList == null){
             	userRankingOfUploadFuture = service.userRankingOfUploadCount();
             }
-            /*アクセス回数順ユーザーリストの取得*/
+            /*アクセス回数順ユーザーリストの非同期取得*/
             Future<List<User>> userRankingOfAccessCountFuture = service.userRankingOfAccessCount();
-            /*日記登録数順ユーザーリストの取得*/
+            /*日記登録数順ユーザーリストの非同期取得*/
             List<User> userRankingOfDiaryCountList = Memcache.get(Consts.UserRankingOfDiaryCount_KEY);
             Future<List<User>> userRankingOfDiaryCountFuture = null;
             if(userRankingOfDiaryCountList == null){
