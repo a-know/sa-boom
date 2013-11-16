@@ -9,6 +9,7 @@ import java.util.TimeZone;
 import java.util.concurrent.Future;
 
 import org.slim3.datastore.Datastore;
+import org.slim3.memcache.Memcache;
 
 import com.aknow.saboom.meta.ActivityMeta;
 import com.aknow.saboom.meta.AmazonApiDataByArtistMeta;
@@ -23,6 +24,7 @@ import com.aknow.saboom.model.ArtistName;
 import com.aknow.saboom.model.TotalPlayCountByArtist;
 import com.aknow.saboom.model.User;
 import com.aknow.saboom.util.AmazonHelper;
+import com.aknow.saboom.util.Consts;
 import com.aknow.saboom.util.FreshPub;
 import com.google.appengine.api.datastore.Key;
 
@@ -158,13 +160,17 @@ public class IndexService {
 
 
         for(Map.Entry<String, Integer> e : totalPlayCountTop10Artist.entrySet()){
-            List<AmazonApiData> data = Datastore.query(meta).filter(meta.artistName.equal(e.getKey())).asList();
+        	List<AmazonApiData> data = Memcache.get(Consts.GetAmazonApiData_KEY + e.getKey());
+        	if(data == null){
+        		data = Datastore.query(meta).filter(meta.artistName.equal(e.getKey())).asList();
+        		Memcache.put(Consts.GetAmazonApiData_KEY + e.getKey(), data);
+        	}
             if(data.size() == 0){
                 imagesTop10Artist.put(e.getKey(), null);
                 urlTop10Artist.put(e.getKey(),null);
             }else{
-                imagesTop10Artist.put(e.getKey(), data.get(0).getImageUrl());
-                urlTop10Artist.put(e.getKey(),data.get(0).getUrl());
+                imagesTop10Artist.put(e.getKey(), data.get(0).getImageUrl() == null ? data.get(0).getImageUrl() : "");
+                urlTop10Artist.put(e.getKey(),data.get(0).getUrl() == null ? data.get(0).getUrl() : "");
             }
         }
 
@@ -180,22 +186,26 @@ public class IndexService {
         //TODO 全く同じメソッドがUserViewServiceにもあり。共通化要
         StringBuffer artistBuffer = new StringBuffer(separater);
 
-
+        boolean apiCallNeed = false;
+        
         for(Map.Entry<String, String> e : urlMap.entrySet()) {
             if(e.getValue() == null){
                 artistBuffer.append(e.getKey());
                 artistBuffer.append(separater);
+            	apiCallNeed = true;
             }
         }
 
-        AmazonHelper helper = new AmazonHelper(artistBuffer.toString());
-        List<FreshPub> freshPubs = null;
-
-        try{
-            freshPubs = helper.getFreshPubs();
-        }catch(Exception e){
-            throw new RuntimeException(e);
+        List<FreshPub> freshPubs = new ArrayList<>();
+        if(apiCallNeed){
+        	AmazonHelper helper = new AmazonHelper(artistBuffer.toString());
+            try{
+                freshPubs = helper.getFreshPubs();
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
         }
+
 
 
         for(FreshPub e : freshPubs){
@@ -349,62 +359,62 @@ public class IndexService {
         return returnList;
     }
 
-    public List<Object> getRankingDataByArtistSecond(){
-
-        String current_year = null;
-        String current_month = Integer.valueOf(calendar.get(Calendar.MONTH)).toString();
-        if("0".equals(current_month)){
-            current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
-            current_month = "12";
-        }else{
-            current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
-        }
-
-        //差分元となる前月情報を特定
-        String pre_year = null;
-        String pre_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
-        if("0".equals(pre_month)){
-            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
-            pre_month = "12";
-        }else{
-            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
-        }
-
-        return getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
-
-    }
-
-    public List<Object> getRankingDataByArtistThird(){
-
-        String current_year = null;
-        String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
-        if("0".equals(current_month)){
-            current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
-            current_month = "12";
-        }else if("-1".equals(current_month)){
-            current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
-            current_month = "11";
-        }else{
-            current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
-        }
-
-        //差分元となる前月情報を特定
-        String pre_year = null;
-        String pre_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 2).toString();
-        if("0".equals(pre_month)){
-            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
-            pre_month = "12";
-        }else if("-1".equals(pre_month)){
-            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
-            pre_month = "11";
-        }else if("-2".equals(pre_month)){
-            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
-            pre_month = "10";
-        }else{
-            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
-        }
-
-        return getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
-
-    }
+//    public List<Object> getRankingDataByArtistSecond(){
+//
+//        String current_year = null;
+//        String current_month = Integer.valueOf(calendar.get(Calendar.MONTH)).toString();
+//        if("0".equals(current_month)){
+//            current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+//            current_month = "12";
+//        }else{
+//            current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+//        }
+//
+//        //差分元となる前月情報を特定
+//        String pre_year = null;
+//        String pre_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
+//        if("0".equals(pre_month)){
+//            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+//            pre_month = "12";
+//        }else{
+//            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+//        }
+//
+//        return getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
+//
+//    }
+//
+//    public List<Object> getRankingDataByArtistThird(){
+//
+//        String current_year = null;
+//        String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
+//        if("0".equals(current_month)){
+//            current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+//            current_month = "12";
+//        }else if("-1".equals(current_month)){
+//            current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+//            current_month = "11";
+//        }else{
+//            current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+//        }
+//
+//        //差分元となる前月情報を特定
+//        String pre_year = null;
+//        String pre_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 2).toString();
+//        if("0".equals(pre_month)){
+//            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+//            pre_month = "12";
+//        }else if("-1".equals(pre_month)){
+//            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+//            pre_month = "11";
+//        }else if("-2".equals(pre_month)){
+//            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+//            pre_month = "10";
+//        }else{
+//            pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+//        }
+//
+//        return getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
+//
+//    }
 }

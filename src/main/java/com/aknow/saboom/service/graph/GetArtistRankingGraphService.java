@@ -65,52 +65,52 @@ public class GetArtistRankingGraphService {
 
         return returnList;
     }
-    @SuppressWarnings({ "unchecked", "static-method" })
-    public List<ArtistRankingGraphData> getSecondData(){
-
-        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-        List<Object> rankingList_second = (List<Object>) syncCache.get("rankingData_second");
-        if(rankingList_second == null){
-            IndexService service = new IndexService();
-            rankingList_second = service.getRankingDataByArtistSecond();
-        }
-        List<String> artistNameList = (List<String>) rankingList_second.get(2);
-        HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_second.get(3);
-        List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
-
-        for(String name : artistNameList){
-            ArtistRankingGraphData data = new ArtistRankingGraphData();
-            int rank = returnList.size() + 1;
-            data.setArtistNameWithRank(rank + "位：" + name);
-            data.setArtistName(name);
-            data.setPlaycount(dataMap.get(name));
-            returnList.add(data);
-        }
-
-        return returnList;
-    }
-    @SuppressWarnings({ "unchecked", "static-method" })
-    public List<ArtistRankingGraphData> getThirdData(){
-
-        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-        List<Object> rankingList_third = (List<Object>) syncCache.get("rankingData_third");
-        if(rankingList_third == null){
-            IndexService service = new IndexService();
-            rankingList_third = service.getRankingDataByArtistThird();
-        }
-        List<String> artistNameList = (List<String>) rankingList_third.get(2);
-        HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_third.get(3);
-        List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
-
-        for(String name : artistNameList){
-            ArtistRankingGraphData data = new ArtistRankingGraphData();
-            int rank = returnList.size() + 1;
-            data.setArtistNameWithRank(rank + "位：" + name);
-            data.setArtistName(name);
-            data.setPlaycount(dataMap.get(name));
-            returnList.add(data);
-        }
-
-        return returnList;
-    }
+//    @SuppressWarnings({ "unchecked", "static-method" })
+//    public List<ArtistRankingGraphData> getSecondData(){
+//
+//        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+//        List<Object> rankingList_second = (List<Object>) syncCache.get("rankingData_second");
+//        if(rankingList_second == null){
+//            IndexService service = new IndexService();
+//            rankingList_second = service.getRankingDataByArtistSecond();
+//        }
+//        List<String> artistNameList = (List<String>) rankingList_second.get(2);
+//        HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_second.get(3);
+//        List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
+//
+//        for(String name : artistNameList){
+//            ArtistRankingGraphData data = new ArtistRankingGraphData();
+//            int rank = returnList.size() + 1;
+//            data.setArtistNameWithRank(rank + "位：" + name);
+//            data.setArtistName(name);
+//            data.setPlaycount(dataMap.get(name));
+//            returnList.add(data);
+//        }
+//
+//        return returnList;
+//    }
+//    @SuppressWarnings({ "unchecked", "static-method" })
+//    public List<ArtistRankingGraphData> getThirdData(){
+//
+//        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+//        List<Object> rankingList_third = (List<Object>) syncCache.get("rankingData_third");
+//        if(rankingList_third == null){
+//            IndexService service = new IndexService();
+//            rankingList_third = service.getRankingDataByArtistThird();
+//        }
+//        List<String> artistNameList = (List<String>) rankingList_third.get(2);
+//        HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_third.get(3);
+//        List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
+//
+//        for(String name : artistNameList){
+//            ArtistRankingGraphData data = new ArtistRankingGraphData();
+//            int rank = returnList.size() + 1;
+//            data.setArtistNameWithRank(rank + "位：" + name);
+//            data.setArtistName(name);
+//            data.setPlaycount(dataMap.get(name));
+//            returnList.add(data);
+//        }
+//
+//        return returnList;
+//    }
 }

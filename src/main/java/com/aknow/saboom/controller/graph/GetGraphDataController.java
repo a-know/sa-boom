@@ -122,36 +122,37 @@ public class GetGraphDataController extends Controller {
                     Memcache.put(Consts.ArtistRankingGraphData_first_KEY, graphDatas);
                 }
                 JSON.encode(graphDatas, this.response.getOutputStream());
-            }else if("8".equals(functionCode)){//総再生回数ランキング・最新月（アーティスト別）グラフ
-                //まずはmamcacheからの読み込み
-                List<ArtistRankingGraphData> graphDatas = Memcache.get(Consts.ArtistRankingGraphData_second_KEY);
-
-                //付随データとの同期を取る
-                if(!Memcache.contains(Consts.ArtistRankingData_second_KEY)){
-                    graphDatas = null;
-                }
-
-                if(graphDatas == null){
-                    GetArtistRankingGraphService service = new GetArtistRankingGraphService();
-                    graphDatas = service.getSecondData();
-                    Memcache.put(Consts.ArtistRankingGraphData_second_KEY, graphDatas);
-                }
-                JSON.encode(graphDatas, this.response.getOutputStream());
-            }else if("9".equals(functionCode)){//総再生回数ランキング・最新月（アーティスト別）グラフ
-                //まずはmamcacheからの読み込み
-                List<ArtistRankingGraphData> graphDatas = Memcache.get(Consts.ArtistRankingGraphData_third_KEY);
-
-                //付随データとの同期を取る
-                if(!Memcache.contains(Consts.ArtistRankingData_third_KEY)){
-                    graphDatas = null;
-                }
-
-                if(graphDatas == null){
-                    GetArtistRankingGraphService service = new GetArtistRankingGraphService();
-                    graphDatas = service.getThirdData();
-                    Memcache.put(Consts.ArtistRankingGraphData_third_KEY, graphDatas);
-                }
-                JSON.encode(graphDatas, this.response.getOutputStream());
+//            }else if("8".equals(functionCode)){//総再生回数ランキング・最新月（アーティスト別）グラフ
+//                //まずはmamcacheからの読み込み
+//                List<ArtistRankingGraphData> graphDatas = Memcache.get(Consts.ArtistRankingGraphData_second_KEY);
+//
+//                //付随データとの同期を取る
+//                if(!Memcache.contains(Consts.ArtistRankingData_second_KEY)){
+//                    graphDatas = null;
+//                }
+//
+//                if(graphDatas == null){
+//                    GetArtistRankingGraphService service = new GetArtistRankingGraphService();
+//                    graphDatas = service.getSecondData();
+//                    Memcache.put(Consts.ArtistRankingGraphData_second_KEY, graphDatas);
+//                }
+//                JSON.encode(graphDatas, this.response.getOutputStream());
+//            }else if("9".equals(functionCode)){//総再生回数ランキング・最新月（アーティスト別）グラフ
+//                //まずはmamcacheからの読み込み
+//                List<ArtistRankingGraphData> graphDatas = Memcache.get(Consts.ArtistRankingGraphData_third_KEY);
+//
+//                //付随データとの同期を取る
+//                if(!Memcache.contains(Consts.ArtistRankingData_third_KEY)){
+//                    graphDatas = null;
+//                }
+//
+//                if(graphDatas == null){
+//                    GetArtistRankingGraphService service = new GetArtistRankingGraphService();
+//                    graphDatas = service.getThirdData();
+//                    Memcache.put(Consts.ArtistRankingGraphData_third_KEY, graphDatas);
+//                }
+//                JSON.encode(graphDatas, this.response.getOutputStream());
+//            }
             }
         }catch(Exception e){
             throw UtilityMethods.sendAlertMail(this.getClass().getName(), e);
