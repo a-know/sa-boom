@@ -174,8 +174,8 @@ public class IndexService {
                 imagesTop10Artist.put(e.getKey(), null);
                 urlTop10Artist.put(e.getKey(),null);
             }else{
-                imagesTop10Artist.put(e.getKey(), data.get(0).getImageUrl() == null ? data.get(0).getImageUrl() : "");
-                urlTop10Artist.put(e.getKey(),data.get(0).getUrl() == null ? data.get(0).getUrl() : "");
+                imagesTop10Artist.put(e.getKey(), data.get(0).getImageUrl() != null ? data.get(0).getImageUrl() : "");
+                urlTop10Artist.put(e.getKey(),data.get(0).getUrl() != null ? data.get(0).getUrl() : "");
             }
         }
 
@@ -281,64 +281,71 @@ public class IndexService {
 
     private List<Object> getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month){
 
-        TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        List<Key> sakiKeyList = Datastore.query(meta).filter(meta.year.equal(saki_year), meta.month.equal(saki_month)).asKeyList();
-        List<TotalPlayCountByArtist> saki_list = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), sakiKeyList);
-        List<Key> motoKeyList = Datastore.query(meta).filter(meta.year.equal(moto_year), meta.month.equal(moto_month)).asKeyList();
-        List<TotalPlayCountByArtist> moto_list = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), motoKeyList);
+    	List<TotalPlayCountByArtist> sorted_list = Memcache.get(Consts.SabunArtistList_KEY + saki_year + saki_month + moto_year + moto_month);
+    	
+    	if(sorted_list == null){
+    		TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
+//    		List<Key> sakiKeyList = Datastore.query(meta).filter(meta.year.equal(saki_year), meta.month.equal(saki_month)).asKeyList();
+//    		List<TotalPlayCountByArtist> saki_list = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), sakiKeyList);
+//    		List<Key> motoKeyList = Datastore.query(meta).filter(meta.year.equal(moto_year), meta.month.equal(moto_month)).asKeyList();
+//    		List<TotalPlayCountByArtist> moto_list = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), motoKeyList);
+    		List<TotalPlayCountByArtist> saki_list = Datastore.query(meta).filter(meta.year.equal(saki_year), meta.month.equal(saki_month)).asList();
+    		List<TotalPlayCountByArtist> moto_list = Datastore.query(meta).filter(meta.year.equal(moto_year), meta.month.equal(moto_month)).asList();
 
-        List<String> saki_artistList = new ArrayList<String>();
-        List<String> moto_artistList = new ArrayList<String>();
+    		List<String> saki_artistList = new ArrayList<String>();
+    		List<String> moto_artistList = new ArrayList<String>();
 
-        for(TotalPlayCountByArtist e1 : saki_list){
-            saki_artistList.add(e1.getArtistName());
-        }
-        for(TotalPlayCountByArtist e2 : moto_list){
-            moto_artistList.add(e2.getArtistName());
-        }
-    	logger.severe("@@@end query " + System.currentTimeMillis());
+    		for(TotalPlayCountByArtist e1 : saki_list){
+    			saki_artistList.add(e1.getArtistName());
+    		}
+    		for(TotalPlayCountByArtist e2 : moto_list){
+    			moto_artistList.add(e2.getArtistName());
+    		}
+    		logger.severe("@@@end query " + System.currentTimeMillis());
 
-        //差分取得
-        List<TotalPlayCountByArtist> sabun_list = new ArrayList<TotalPlayCountByArtist>();
+    		//差分取得
+    		List<TotalPlayCountByArtist> sabun_list = new ArrayList<TotalPlayCountByArtist>();
 
-        for(TotalPlayCountByArtist e1 : saki_list){
-            TotalPlayCountByArtist tempElement = new TotalPlayCountByArtist();
+    		for(TotalPlayCountByArtist e1 : saki_list){
+    			TotalPlayCountByArtist tempElement = new TotalPlayCountByArtist();
 
-            if(moto_artistList.contains(e1.getArtistName())){
-                TotalPlayCountByArtist e2 = moto_list.get(moto_artistList.indexOf(e1.getArtistName()));
-                tempElement.setArtistName(e1.getArtistName());
-                tempElement.setYear(saki_year);
-                tempElement.setMonth(saki_month);
-                tempElement.setTotalPlayCount(Integer.valueOf(e1.getTotalPlayCount().intValue() - e2.getTotalPlayCount().intValue()));
-                sabun_list.add(tempElement);
-            }
-        }
-    	logger.severe("@@@end sabun " + System.currentTimeMillis());
+    			if(moto_artistList.contains(e1.getArtistName())){
+    				TotalPlayCountByArtist e2 = moto_list.get(moto_artistList.indexOf(e1.getArtistName()));
+    				tempElement.setArtistName(e1.getArtistName());
+    				tempElement.setYear(saki_year);
+    				tempElement.setMonth(saki_month);
+    				tempElement.setTotalPlayCount(Integer.valueOf(e1.getTotalPlayCount().intValue() - e2.getTotalPlayCount().intValue()));
+    				sabun_list.add(tempElement);
+    			}
+    		}
+    		logger.severe("@@@end sabun " + System.currentTimeMillis());
 
-        //再生回数でソート
-        List<TotalPlayCountByArtist> sorted_list = new ArrayList<TotalPlayCountByArtist>();
+    		//再生回数でソート
+    		sorted_list = new ArrayList<TotalPlayCountByArtist>();
 
-        while(sorted_list.size() < 10){
+    		while(sorted_list.size() < 10){
 
-            int max = 0;
-            int maxIndex = 0;
-            TotalPlayCountByArtist tempElement = null;
+    			int max = 0;
+    			int maxIndex = 0;
+    			TotalPlayCountByArtist tempElement = null;
 
-            for(int i = 0; i < sabun_list.size(); i++){
-                TotalPlayCountByArtist e = sabun_list.get(i);
-                if(e.getTotalPlayCount().intValue() > max){
-                    tempElement = new TotalPlayCountByArtist();
-                    tempElement.setArtistName(e.getArtistName());
-                    tempElement.setTotalPlayCount(e.getTotalPlayCount());
-                    max = e.getTotalPlayCount().intValue();
-                    maxIndex = i;
-                }
-            }
+    			for(int i = 0; i < sabun_list.size(); i++){
+    				TotalPlayCountByArtist e = sabun_list.get(i);
+    				if(e.getTotalPlayCount().intValue() > max){
+    					tempElement = new TotalPlayCountByArtist();
+    					tempElement.setArtistName(e.getArtistName());
+    					tempElement.setTotalPlayCount(e.getTotalPlayCount());
+    					max = e.getTotalPlayCount().intValue();
+    					maxIndex = i;
+    				}
+    			}
 
-            sorted_list.add(tempElement);
-            sabun_list.remove(maxIndex);
-        }
-    	logger.severe("@@@end sort " + System.currentTimeMillis());
+    			sorted_list.add(tempElement);
+    			sabun_list.remove(maxIndex);
+    		}
+    		Memcache.put(Consts.SabunArtistList_KEY + saki_year + saki_month + moto_year + moto_month, sorted_list);
+    		logger.severe("@@@end sort " + System.currentTimeMillis());
+    	}
 
         //出力情報の生成
         List<String> artistNameList = new ArrayList<String>();
