@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.slim3.datastore.Datastore;
 import org.slim3.memcache.Memcache;
 
-import com.aknow.saboom.controller.IndexController;
 import com.aknow.saboom.meta.ActivityMeta;
 import com.aknow.saboom.meta.AmazonApiDataByArtistMeta;
 import com.aknow.saboom.meta.AmazonApiDataMeta;
@@ -27,6 +26,7 @@ import com.aknow.saboom.model.TotalPlayCountByArtist;
 import com.aknow.saboom.model.User;
 import com.aknow.saboom.util.AmazonHelper;
 import com.aknow.saboom.util.Consts;
+import com.aknow.saboom.util.DatastoreCacheUtility;
 import com.aknow.saboom.util.FreshPub;
 import com.google.appengine.api.datastore.Key;
 
@@ -131,7 +131,8 @@ public class IndexService {
         List<String> top10ArtistDataList = new ArrayList<String>();
 
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        List<TotalPlayCountByArtist> datas = Datastore.query(meta).filter(meta.year.equal(current_year), meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.year.equal(current_year), meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asKeyList();
+        List<TotalPlayCountByArtist> datas = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), keyList);
 
         for(TotalPlayCountByArtist e : datas){
             top10ArtistDataList.add(e.getArtistName());
@@ -148,7 +149,8 @@ public class IndexService {
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
 
         for(String e : top10ArtistDataList){
-            List<TotalPlayCountByArtist> datas = Datastore.query(meta).filter(meta.artistName.equal(e)).sort(meta.year.desc, meta.month.desc).asList();
+        	List<Key> keyList = Datastore.query(meta).filter(meta.artistName.equal(e)).sort(meta.year.desc, meta.month.desc).asKeyList();
+            List<TotalPlayCountByArtist> datas = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), keyList);
             map.put(e, datas.get(0).getTotalPlayCount());
         }
 
@@ -280,8 +282,10 @@ public class IndexService {
     private List<Object> getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month){
 
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        List<TotalPlayCountByArtist> saki_list = Datastore.query(meta).filter(meta.year.equal(saki_year), meta.month.equal(saki_month)).asList();
-        List<TotalPlayCountByArtist> moto_list = Datastore.query(meta).filter(meta.year.equal(moto_year), meta.month.equal(moto_month)).asList();
+        List<Key> sakiKeyList = Datastore.query(meta).filter(meta.year.equal(saki_year), meta.month.equal(saki_month)).asKeyList();
+        List<TotalPlayCountByArtist> saki_list = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), sakiKeyList);
+        List<Key> motoKeyList = Datastore.query(meta).filter(meta.year.equal(moto_year), meta.month.equal(moto_month)).asKeyList();
+        List<TotalPlayCountByArtist> moto_list = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), motoKeyList);
 
         List<String> saki_artistList = new ArrayList<String>();
         List<String> moto_artistList = new ArrayList<String>();

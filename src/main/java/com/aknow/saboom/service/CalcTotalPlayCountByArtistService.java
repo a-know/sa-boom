@@ -14,6 +14,7 @@ import com.aknow.saboom.meta.TotalPlayCountByArtistMeta;
 import com.aknow.saboom.model.PlayCountByArtist;
 import com.aknow.saboom.model.TotalPlayCountByArtist;
 import com.aknow.saboom.util.Consts;
+import com.aknow.saboom.util.DatastoreCacheUtility;
 
 
 public class CalcTotalPlayCountByArtistService {
@@ -61,7 +62,7 @@ public class CalcTotalPlayCountByArtistService {
                 model.setTotalPlayCount(m.getValue());
             }
 
-            Datastore.putAsync(model);
+            DatastoreCacheUtility.put(model, model.getKey());
         }
 
         //delete memcache

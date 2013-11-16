@@ -8,13 +8,14 @@ import java.util.TimeZone;
 
 import org.slim3.datastore.Datastore;
 
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-
 import com.aknow.saboom.meta.TotalPlayCountByArtistMeta;
 import com.aknow.saboom.model.TotalPlayCountByArtist;
 import com.aknow.saboom.model.graph.ArtistRankingGraphData;
 import com.aknow.saboom.service.IndexService;
+import com.aknow.saboom.util.DatastoreCacheUtility;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 
 public class GetArtistRankingGraphService {
@@ -28,7 +29,8 @@ public class GetArtistRankingGraphService {
         List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
 
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        List<TotalPlayCountByArtist> datas = Datastore.query(meta).filter(meta.year.equal(current_year),meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.year.equal(current_year),meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asKeyList();
+        List<TotalPlayCountByArtist> datas = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), keyList);
 
         for(TotalPlayCountByArtist e : datas){
             ArtistRankingGraphData data = new ArtistRankingGraphData();

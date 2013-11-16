@@ -6,4 +6,11 @@
 <schedule>every day 01:35</schedule>
 <timezone>Asia/Tokyo</timezone>
 </cron>
+  <cron>
+    <url>/makeMemcache</url>
+    <description>load entity into memcache</description>
+    <schedule>every day 22:06</schedule>
+	<timezone>Asia/Tokyo</timezone>
+    <target>small</target> 
+  </cron>
 </cronentries>
