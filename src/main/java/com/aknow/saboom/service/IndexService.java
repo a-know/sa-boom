@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 import org.slim3.datastore.Datastore;
 import org.slim3.memcache.Memcache;
 
+import com.aknow.saboom.controller.IndexController;
 import com.aknow.saboom.meta.ActivityMeta;
 import com.aknow.saboom.meta.AmazonApiDataByArtistMeta;
 import com.aknow.saboom.meta.AmazonApiDataMeta;
@@ -33,6 +35,7 @@ public class IndexService {
 	
     private static Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
     private static final String separater = "@@##@@";
+    private static final Logger logger = Logger.getLogger(IndexService.class.getName());
 
     @SuppressWarnings("static-method")
     public Future<List<Activity>> getActivity() {
@@ -253,6 +256,8 @@ public class IndexService {
     }
 
     public List<Object> getRankingDataByArtistFirst(){
+    	
+    	logger.severe("@@@getRankingDataByArtistFirst start " + System.currentTimeMillis());
 
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
@@ -266,6 +271,7 @@ public class IndexService {
         }else{
             pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         }
+    	logger.severe("@@@end dicide param " + System.currentTimeMillis());
 
         return getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
 
@@ -286,6 +292,7 @@ public class IndexService {
         for(TotalPlayCountByArtist e2 : moto_list){
             moto_artistList.add(e2.getArtistName());
         }
+    	logger.severe("@@@end query " + System.currentTimeMillis());
 
         //差分取得
         List<TotalPlayCountByArtist> sabun_list = new ArrayList<TotalPlayCountByArtist>();
@@ -301,14 +308,8 @@ public class IndexService {
                 tempElement.setTotalPlayCount(Integer.valueOf(e1.getTotalPlayCount().intValue() - e2.getTotalPlayCount().intValue()));
                 sabun_list.add(tempElement);
             }
-//            if(!find){
-//                tempElement.setArtistName(e1.getArtistName());
-//                tempElement.setYear(saki_year);
-//                tempElement.setMonth(saki_month);
-//                tempElement.setTotalPlayCount(e1.getTotalPlayCount());
-//                sabun_list.add(tempElement);
-//            }
         }
+    	logger.severe("@@@end sabun " + System.currentTimeMillis());
 
         //再生回数でソート
         List<TotalPlayCountByArtist> sorted_list = new ArrayList<TotalPlayCountByArtist>();
@@ -333,6 +334,7 @@ public class IndexService {
             sorted_list.add(tempElement);
             sabun_list.remove(maxIndex);
         }
+    	logger.severe("@@@end sort " + System.currentTimeMillis());
 
         //出力情報の生成
         List<String> artistNameList = new ArrayList<String>();
@@ -355,6 +357,7 @@ public class IndexService {
         returnList.add(dataMap);
         returnList.add(imageList);
         returnList.add(urlList);
+    	logger.severe("@@@end output " + System.currentTimeMillis());
 
         return returnList;
     }
