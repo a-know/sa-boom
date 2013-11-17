@@ -3,21 +3,21 @@
   <cron>
     <url>/calcTotalPlayCountByArtist</url>
     <description>calcuration to total playcount by artist</description>
-    <schedule>every day 01:00</schedule>
+    <schedule>every day 00:00</schedule>
     <timezone>Asia/Tokyo</timezone>
     <target>small</target>
   </cron>
   <cron>
     <url>/makeMemcache</url>
     <description>load entity into memcache</description>
-    <schedule>every day 03:00</schedule>
+    <schedule>every day 01:00</schedule>
 	<timezone>Asia/Tokyo</timezone>
     <target>small</target>
   </cron>
   <cron>
     <url>/makeTopPageCache</url>
-    <description>load entity into memcache</description>
-    <schedule>every 2 hours</schedule>
+    <description>load entity cache into datastore</description>
+    <schedule>every day 2:00</schedule>
 	<timezone>Asia/Tokyo</timezone>
     <target>small</target> 
   </cron>
