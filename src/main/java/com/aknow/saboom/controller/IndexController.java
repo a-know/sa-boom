@@ -102,52 +102,23 @@ public class IndexController extends Controller {
             requestScope("urlTop10Artist_first", rankingList_first.get(5));
 
 
-//            //second
-//            List<Object> rankingList_second = (List<Object>) Memcache.get(Consts.ArtistRankingData_second_KEY);
-//
-//
-//            //グラフデータと同期を取る
-//            if(!Memcache.contains(Consts.ArtistRankingGraphData_second_KEY)){
-//                rankingList_second = null;
-//            }
-//
-//            if(rankingList_second == null) {
-//                rankingList_second = service.getRankingDataByArtistSecond();
-//                Memcache.put(Consts.ArtistRankingData_second_KEY, rankingList_second);
-//            }
-//            requestScope("year_second", rankingList_second.get(0));
-//            requestScope("month_second", rankingList_second.get(1));
-//            requestScope("top10ArtistDataList_second", rankingList_second.get(2));
-//            requestScope("playCountTop10Artist_second", rankingList_second.get(3));
-//            requestScope("imagesTop10Artist_second", rankingList_second.get(4));
-//            requestScope("urlTop10Artist_second", rankingList_second.get(5));
+            //second
+            List<Object> rankingList_second = service.getRankingDataByArtistSecond();
+            requestScope("year_second", rankingList_second.get(0));
+            requestScope("month_second", rankingList_second.get(1));
+            requestScope("top10ArtistDataList_second", rankingList_second.get(2));
+            requestScope("playCountTop10Artist_second", rankingList_second.get(3));
+            requestScope("imagesTop10Artist_second", rankingList_second.get(4));
+            requestScope("urlTop10Artist_second", rankingList_second.get(5));
 
-//            //third
-//            List<Object> rankingList_third = (List<Object>) Memcache.get(Consts.ArtistRankingData_third_KEY);
-//
-//
-//            //グラフデータと同期を取る
-//            if(!Memcache.contains(Consts.ArtistRankingGraphData_third_KEY)){
-//                rankingList_third = null;
-//            }
-//
-//            if(rankingList_third == null) {
-//                rankingList_third = service.getRankingDataByArtistThird();
-//                Memcache.put(Consts.ArtistRankingData_third_KEY, rankingList_third);
-//            }
-//            requestScope("year_third", rankingList_third.get(0));
-//            requestScope("month_third", rankingList_third.get(1));
-//            requestScope("top10ArtistDataList_third", rankingList_third.get(2));
-//            requestScope("playCountTop10Artist_third", rankingList_third.get(3));
-//            requestScope("imagesTop10Artist_third", rankingList_third.get(4));
-//            requestScope("urlTop10Artist_third", rankingList_third.get(5));
-
-
-
-
-
-            
-
+            //third
+            List<Object> rankingList_third = service.getRankingDataByArtistThird();
+            requestScope("year_third", rankingList_third.get(0));
+            requestScope("month_third", rankingList_third.get(1));
+            requestScope("top10ArtistDataList_third", rankingList_third.get(2));
+            requestScope("playCountTop10Artist_third", rankingList_third.get(3));
+            requestScope("imagesTop10Artist_third", rankingList_third.get(4));
+            requestScope("urlTop10Artist_third", rankingList_third.get(5));
 
             /*登録済みユーザー数の取得*/
             Integer userCount = Memcache.get(Consts.TotalUserCount_KEY);

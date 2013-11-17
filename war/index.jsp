@@ -434,9 +434,9 @@ div.content {
 
                 <ul class="tabs" data-tabs="tabs">
                     <li class="active"><a href="#total">総合</li>
-                    <!--<li><a href="#third" id="thirdTab"><c:out value="${year_third}"/>年<c:out value="${month_third}"/>月度</a></li> -->
-                    <!-- <li><a href="#second" id="secondTab"><c:out value="${year_second}"/>年<c:out value="${month_second}"/>月度</a></li> -->
                     <li><a href="#first" id="firstTab"><c:out value="${year_first}"/>年<c:out value="${month_first}"/>月度</a></li>
+                    <li><a href="#second" id="secondTab"><c:out value="${year_second}"/>年<c:out value="${month_second}"/>月度</a></li>
+                    <li><a href="#third" id="thirdTab"><c:out value="${year_third}"/>年<c:out value="${month_third}"/>月度</a></li>
                 </ul>
 
                 <div id="my-tab-content" class="tab-content">
@@ -461,8 +461,6 @@ div.content {
                     <div align="right"><span class="help-block">ランキングは、一日に一回、更新されます。</span></div>
                   </div>
 
-
-
                   <div class="tab-pane" id="first">
                     <br>
                     <div id='graph_TotalPlayCountRanking_Artist_first' style='width:500px; height:600px; display:none;'></div>
@@ -484,7 +482,6 @@ div.content {
                     <div align="right"><span class="help-block">ランキングは、一日に一回、更新されます。</span></div>
                   </div>
 
-<!--
                   <div class="tab-pane" id="second">
                     <br>
                     <div id='graph_TotalPlayCountRanking_Artist_second' style='width:500px; height:600px; display:none;'></div>
@@ -504,8 +501,7 @@ div.content {
                           </c:if>
                         </c:forEach>
                   </div>
--->
-<!--
+
                   <div class="tab-pane" id="third">
                     <br>
                     <div id='graph_TotalPlayCountRanking_Artist_third' style='width:500px; height:600px; display:none;'></div>
@@ -525,9 +521,6 @@ div.content {
                           </c:if>
                         </c:forEach>
                   </div>
- -->
-
-
                 </div>
             </div>
           </div>
