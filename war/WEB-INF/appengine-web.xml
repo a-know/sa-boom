@@ -4,7 +4,15 @@
   <version>100</version>
 
   <static-files>
-    <include path="/**.*"/>
+    <include path="/css/*.css" />
+    <include path="/images/*.png" />
+    <include path="/images/*.gif" />
+    <include path="/images/*.jpg" />
+    <include path="/js/*.js" />
+    <include path="/js/dist/plugins/*.js" />
+    <include path="/js/dist/plugins/*.css" />
+    <include path="/js/dist/*.js" />
+    <include path="/images/favicon.ico" />
   </static-files>
   
   <precompilation-enabled>true</precompilation-enabled>
@@ -17,7 +25,8 @@
     <property name="slim3.uploadFileSizeMax" value="100000"/>
     -->
     <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
+    <property name="appengine.datastore.disableChunkSizeWarning" value="true"/>
   </system-properties>
-  <sessions-enabled>false</sessions-enabled>
+  <sessions-enabled>true</sessions-enabled>
   <threadsafe>true</threadsafe>
 </appengine-web-app>
