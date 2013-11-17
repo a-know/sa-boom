@@ -29,7 +29,7 @@ public class DatastoreCacheUtility {
 	}
 	
 	public static <T> void put(T object, Key key){
-		Datastore.put(object.getClass(), object);
+		Datastore.put(object);
 		if(Memcache.get(key) != null){
 			Memcache.delete(key);
 		}
