@@ -11,10 +11,10 @@ import com.google.appengine.api.datastore.Key;
 public class DatastoreCacheUtility {
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T get(T t, Key key){
+	public static <T> T getOrNull(T t, Key key){
 		T entity = Memcache.get(key);
 		if(entity == null){
-			entity = (T) Datastore.get(t.getClass(), key);
+			entity = (T) Datastore.getOrNull(t.getClass(), key);
 			Memcache.put(key, entity);
 		}
 		return entity;
@@ -23,7 +23,7 @@ public class DatastoreCacheUtility {
 	public static <T> List<T> get(T t, List<Key> keyList){
 		List<T> entityList = new ArrayList<>();
 		for(Key key : keyList){
-			entityList.add(get(t, key));
+			entityList.add(getOrNull(t, key));
 		}
 		return entityList;
 	}

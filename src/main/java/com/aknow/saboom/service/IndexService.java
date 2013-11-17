@@ -278,7 +278,7 @@ public class IndexService {
 
     private List<Object> getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month){
 
-    	RankingDataForTopPage d = DatastoreCacheUtility.get(new RankingDataForTopPage(), RankingDataForTopPage.createKey(moto_year, moto_month, saki_year, saki_month));
+    	RankingDataForTopPage d = DatastoreCacheUtility.getOrNull(new RankingDataForTopPage(), RankingDataForTopPage.createKey(moto_year, moto_month, saki_year, saki_month));
     	List<TotalPlayCountByArtist> sorted_list = d.getSortedList();
 
         //出力情報の生成
