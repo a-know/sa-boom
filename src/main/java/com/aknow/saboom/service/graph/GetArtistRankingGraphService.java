@@ -8,13 +8,12 @@ import java.util.TimeZone;
 
 import org.slim3.datastore.Datastore;
 
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-
 import com.aknow.saboom.meta.TotalPlayCountByArtistMeta;
 import com.aknow.saboom.model.TotalPlayCountByArtist;
 import com.aknow.saboom.model.graph.ArtistRankingGraphData;
 import com.aknow.saboom.service.IndexService;
+import com.aknow.saboom.util.DatastoreCacheUtility;
+import com.google.appengine.api.datastore.Key;
 
 
 public class GetArtistRankingGraphService {
@@ -28,7 +27,8 @@ public class GetArtistRankingGraphService {
         List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
 
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        List<TotalPlayCountByArtist> datas = Datastore.query(meta).filter(meta.year.equal(current_year),meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.year.equal(current_year),meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asKeyList();
+        List<TotalPlayCountByArtist> datas = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), keyList);
 
         for(TotalPlayCountByArtist e : datas){
             ArtistRankingGraphData data = new ArtistRankingGraphData();
@@ -44,12 +44,9 @@ public class GetArtistRankingGraphService {
     @SuppressWarnings({ "unchecked", "static-method" })
     public List<ArtistRankingGraphData> getFirstData(){
 
-        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-        List<Object> rankingList_first = (List<Object>) syncCache.get("rankingData_first");
-        if(rankingList_first == null){
-            IndexService service = new IndexService();
-            rankingList_first = service.getRankingDataByArtistFirst();
-        }
+    	IndexService service = new IndexService();
+    	List<Object> rankingList_first = service.getRankingDataByArtistFirst();
+            
         List<String> artistNameList = (List<String>) rankingList_first.get(2);
         HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_first.get(3);
         List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
@@ -68,12 +65,9 @@ public class GetArtistRankingGraphService {
     @SuppressWarnings({ "unchecked", "static-method" })
     public List<ArtistRankingGraphData> getSecondData(){
 
-        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-        List<Object> rankingList_second = (List<Object>) syncCache.get("rankingData_second");
-        if(rankingList_second == null){
-            IndexService service = new IndexService();
-            rankingList_second = service.getRankingDataByArtistSecond();
-        }
+    	IndexService service = new IndexService();
+        List<Object> rankingList_second = service.getRankingDataByArtistSecond();
+        
         List<String> artistNameList = (List<String>) rankingList_second.get(2);
         HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_second.get(3);
         List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
@@ -89,15 +83,13 @@ public class GetArtistRankingGraphService {
 
         return returnList;
     }
+    
     @SuppressWarnings({ "unchecked", "static-method" })
     public List<ArtistRankingGraphData> getThirdData(){
 
-        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-        List<Object> rankingList_third = (List<Object>) syncCache.get("rankingData_third");
-        if(rankingList_third == null){
-            IndexService service = new IndexService();
-            rankingList_third = service.getRankingDataByArtistThird();
-        }
+    	IndexService service = new IndexService();
+        List<Object> rankingList_third = service.getRankingDataByArtistThird();
+        
         List<String> artistNameList = (List<String>) rankingList_third.get(2);
         HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_third.get(3);
         List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();

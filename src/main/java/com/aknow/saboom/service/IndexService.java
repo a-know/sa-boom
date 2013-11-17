@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Future;
 
 import org.slim3.datastore.Datastore;
+import org.slim3.memcache.Memcache;
 
 import com.aknow.saboom.meta.ActivityMeta;
 import com.aknow.saboom.meta.AmazonApiDataByArtistMeta;
@@ -19,18 +21,27 @@ import com.aknow.saboom.model.Activity;
 import com.aknow.saboom.model.AmazonApiData;
 import com.aknow.saboom.model.AmazonApiDataByArtist;
 import com.aknow.saboom.model.ArtistName;
+import com.aknow.saboom.model.RankingDataForTopPage;
 import com.aknow.saboom.model.TotalPlayCountByArtist;
 import com.aknow.saboom.model.User;
 import com.aknow.saboom.util.AmazonHelper;
+import com.aknow.saboom.util.Consts;
+import com.aknow.saboom.util.DatastoreCacheUtility;
 import com.aknow.saboom.util.FreshPub;
+import com.google.appengine.api.datastore.Key;
 
 
 public class IndexService {
+	
+    private static Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
+    private static final String separater = "@@##@@";
+//    private static final Logger logger = Logger.getLogger(IndexService.class.getName());
 
     @SuppressWarnings("static-method")
-    public ArrayList<Activity> getActivity() {
+    public Future<List<Activity>> getActivity() {
         ActivityMeta meta = ActivityMeta.get();
-        return (ArrayList<Activity>) Datastore.query(meta).filter(meta.viewable.equal(Boolean.TRUE)).sort(meta.activityDate.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.viewable.equal(Boolean.TRUE)).sort(meta.activityDate.desc).limit(10).asKeyList();
+        return (Future<List<Activity>>) Datastore.getAsync(Activity.class, keyList);
     }
 
     @SuppressWarnings("static-method")
@@ -67,7 +78,6 @@ public class IndexService {
     @SuppressWarnings("static-method")
     public ArrayList<List<String>> getDataFromApi(int limit, String artistName, List<String> urlList, List<String> imageUrlList){
 
-        String separater = "@@##@@";
         StringBuffer artistBuffer = new StringBuffer(separater);
         artistBuffer.append(artistName);
         artistBuffer.append(separater);
@@ -115,14 +125,14 @@ public class IndexService {
     @SuppressWarnings("static-method")
     public List<String> getTop10ArtistDataList(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
 
         List<String> top10ArtistDataList = new ArrayList<String>();
 
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        List<TotalPlayCountByArtist> datas = Datastore.query(meta).filter(meta.year.equal(current_year), meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.year.equal(current_year), meta.month.equal(current_month)).sort(meta.totalPlayCount.desc).limit(10).asKeyList();
+        List<TotalPlayCountByArtist> datas = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), keyList);
 
         for(TotalPlayCountByArtist e : datas){
             top10ArtistDataList.add(e.getArtistName());
@@ -139,7 +149,8 @@ public class IndexService {
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
 
         for(String e : top10ArtistDataList){
-            List<TotalPlayCountByArtist> datas = Datastore.query(meta).filter(meta.artistName.equal(e)).sort(meta.year.desc, meta.month.desc).asList();
+        	List<Key> keyList = Datastore.query(meta).filter(meta.artistName.equal(e)).sort(meta.year.desc, meta.month.desc).asKeyList();
+            List<TotalPlayCountByArtist> datas = DatastoreCacheUtility.get(new TotalPlayCountByArtist(), keyList);
             map.put(e, datas.get(0).getTotalPlayCount());
         }
 
@@ -154,13 +165,17 @@ public class IndexService {
 
 
         for(Map.Entry<String, Integer> e : totalPlayCountTop10Artist.entrySet()){
-            List<AmazonApiData> data = Datastore.query(meta).filter(meta.artistName.equal(e.getKey())).asList();
+        	List<AmazonApiData> data = Memcache.get(Consts.GetAmazonApiData_KEY + e.getKey());
+        	if(data == null){
+        		data = Datastore.query(meta).filter(meta.artistName.equal(e.getKey())).asList();
+        		Memcache.put(Consts.GetAmazonApiData_KEY + e.getKey(), data);
+        	}
             if(data.size() == 0){
                 imagesTop10Artist.put(e.getKey(), null);
                 urlTop10Artist.put(e.getKey(),null);
             }else{
-                imagesTop10Artist.put(e.getKey(), data.get(0).getImageUrl());
-                urlTop10Artist.put(e.getKey(),data.get(0).getUrl());
+                imagesTop10Artist.put(e.getKey(), data.get(0).getImageUrl() != null ? data.get(0).getImageUrl() : "");
+                urlTop10Artist.put(e.getKey(),data.get(0).getUrl() != null ? data.get(0).getUrl() : "");
             }
         }
 
@@ -174,25 +189,28 @@ public class IndexService {
     @SuppressWarnings("static-method")
     public ArrayList<HashMap<String, String>> getDataFromApi(HashMap<String, String> urlMap, HashMap<String, String> imageUrlMap){
         //TODO 全く同じメソッドがUserViewServiceにもあり。共通化要
-        String separater = "@@##@@";
         StringBuffer artistBuffer = new StringBuffer(separater);
 
-
+        boolean apiCallNeed = false;
+        
         for(Map.Entry<String, String> e : urlMap.entrySet()) {
             if(e.getValue() == null){
                 artistBuffer.append(e.getKey());
                 artistBuffer.append(separater);
+            	apiCallNeed = true;
             }
         }
 
-        AmazonHelper helper = new AmazonHelper(artistBuffer.toString());
-        List<FreshPub> freshPubs = null;
-
-        try{
-            freshPubs = helper.getFreshPubs();
-        }catch(Exception e){
-            throw new RuntimeException(e);
+        List<FreshPub> freshPubs = new ArrayList<>();
+        if(apiCallNeed){
+        	AmazonHelper helper = new AmazonHelper(artistBuffer.toString());
+            try{
+                freshPubs = helper.getFreshPubs();
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
         }
+
 
 
         for(FreshPub e : freshPubs){
@@ -216,32 +234,31 @@ public class IndexService {
     }
 
     @SuppressWarnings("static-method")
-    public List<User> userRankingOfUploadCount(){
+    public Future<List<User>> userRankingOfUploadCount(){
         UserMeta meta = new UserMeta();
-        List<User> list = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.uploadCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.uploadCount.desc).limit(10).asKeyList();
 
-        return list;
+        return Datastore.getAsync(User.class, keyList);
     }
 
     @SuppressWarnings("static-method")
-    public List<User> userRankingOfAccessCount(){
+    public Future<List<User>> userRankingOfAccessCount(){
         UserMeta meta = new UserMeta();
-        List<User> list = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.accessCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.accessCount.desc).limit(10).asKeyList();
 
-        return list;
+        return Datastore.getAsync(User.class, keyList);
     }
 
     @SuppressWarnings("static-method")
-    public List<User> userRankingOfDiaryCount(){
+    public Future<List<User>> userRankingOfDiaryCount(){
         UserMeta meta = new UserMeta();
-        List<User> list = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.diaryCount.desc).limit(10).asList();
+        List<Key> keyList = Datastore.query(meta).filter(meta.isPrivate.equal(Boolean.FALSE)).sort(meta.diaryCount.desc).limit(10).asKeyList();
 
-        return list;
+        return Datastore.getAsync(User.class, keyList);
     }
 
     public List<Object> getRankingDataByArtistFirst(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
 
@@ -261,66 +278,8 @@ public class IndexService {
 
     private List<Object> getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month){
 
-        TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        List<TotalPlayCountByArtist> saki_list = Datastore.query(meta).filter(meta.year.equal(saki_year), meta.month.equal(saki_month)).asList();
-        List<TotalPlayCountByArtist> moto_list = Datastore.query(meta).filter(meta.year.equal(moto_year), meta.month.equal(moto_month)).asList();
-
-        List<String> saki_artistList = new ArrayList<String>();
-        List<String> moto_artistList = new ArrayList<String>();
-
-        for(TotalPlayCountByArtist e1 : saki_list){
-            saki_artistList.add(e1.getArtistName());
-        }
-        for(TotalPlayCountByArtist e2 : moto_list){
-            moto_artistList.add(e2.getArtistName());
-        }
-
-        //差分取得
-        List<TotalPlayCountByArtist> sabun_list = new ArrayList<TotalPlayCountByArtist>();
-
-        for(TotalPlayCountByArtist e1 : saki_list){
-            TotalPlayCountByArtist tempElement = new TotalPlayCountByArtist();
-
-            if(moto_artistList.contains(e1.getArtistName())){
-                TotalPlayCountByArtist e2 = moto_list.get(moto_artistList.indexOf(e1.getArtistName()));
-                tempElement.setArtistName(e1.getArtistName());
-                tempElement.setYear(saki_year);
-                tempElement.setMonth(saki_month);
-                tempElement.setTotalPlayCount(Integer.valueOf(e1.getTotalPlayCount().intValue() - e2.getTotalPlayCount().intValue()));
-                sabun_list.add(tempElement);
-            }
-//            if(!find){
-//                tempElement.setArtistName(e1.getArtistName());
-//                tempElement.setYear(saki_year);
-//                tempElement.setMonth(saki_month);
-//                tempElement.setTotalPlayCount(e1.getTotalPlayCount());
-//                sabun_list.add(tempElement);
-//            }
-        }
-
-        //再生回数でソート
-        List<TotalPlayCountByArtist> sorted_list = new ArrayList<TotalPlayCountByArtist>();
-
-        while(sorted_list.size() < 10){
-
-            int max = 0;
-            int maxIndex = 0;
-            TotalPlayCountByArtist tempElement = null;
-
-            for(int i = 0; i < sabun_list.size(); i++){
-                TotalPlayCountByArtist e = sabun_list.get(i);
-                if(e.getTotalPlayCount().intValue() > max){
-                    tempElement = new TotalPlayCountByArtist();
-                    tempElement.setArtistName(e.getArtistName());
-                    tempElement.setTotalPlayCount(e.getTotalPlayCount());
-                    max = e.getTotalPlayCount().intValue();
-                    maxIndex = i;
-                }
-            }
-
-            sorted_list.add(tempElement);
-            sabun_list.remove(maxIndex);
-        }
+    	RankingDataForTopPage d = DatastoreCacheUtility.getOrNull(new RankingDataForTopPage(), RankingDataForTopPage.createKey(moto_year, moto_month, saki_year, saki_month));
+    	List<TotalPlayCountByArtist> sorted_list = d.getSortedList();
 
         //出力情報の生成
         List<String> artistNameList = new ArrayList<String>();
@@ -349,7 +308,6 @@ public class IndexService {
 
     public List<Object> getRankingDataByArtistSecond(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = null;
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH)).toString();
         if("0".equals(current_month)){
@@ -368,14 +326,11 @@ public class IndexService {
         }else{
             pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         }
-
         return getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
-
     }
 
     public List<Object> getRankingDataByArtistThird(){
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = null;
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
         if("0".equals(current_month)){

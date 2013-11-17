@@ -25,4 +25,6 @@ public class Consts {
     public static final String ArtistRankingData_third_KEY = "rankingData_third";
     public static final String UserRankingOfUploadCount_KEY = "userRankingOfUploadCount";
     public static final String UserRankingOfDiaryCount_KEY = "userRankingOfDiaryCount";
+    public static final String GetAmazonApiData_KEY = "getAmazonApiData";
+    public static final String SabunArtistList_KEY = "SabunArtistList";
 }
