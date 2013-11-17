@@ -93,19 +93,7 @@ public class IndexController extends Controller {
 
             /*アーティスト別再生回数ランキング・差分情報取得*/
             //first
-            //まずmemcacheからの取得を試みる。
-            List<Object> rankingList_first = (List<Object>) Memcache.get(Consts.ArtistRankingData_first_KEY);
-
-            //グラフデータと同期を取る
-            if(!Memcache.contains(Consts.ArtistRankingGraphData_first_KEY)){
-                rankingList_first = null;
-            }
-
-            if(rankingList_first == null) {
-                rankingList_first = service.getRankingDataByArtistFirst();
-                Memcache.put(Consts.ArtistRankingData_first_KEY, rankingList_first);
-            }
-
+            List<Object> rankingList_first = service.getRankingDataByArtistFirst();
             requestScope("year_first", rankingList_first.get(0));
             requestScope("month_first", rankingList_first.get(1));
             requestScope("top10ArtistDataList_first", rankingList_first.get(2));

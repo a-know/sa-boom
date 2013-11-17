@@ -27,6 +27,8 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 public class GetGraphDataController extends Controller {
+	
+	public static GetArtistRankingGraphService service = new GetArtistRankingGraphService();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -102,25 +104,12 @@ public class GetGraphDataController extends Controller {
                 }
 
                 if(graphDatas == null){
-                    GetArtistRankingGraphService service = new GetArtistRankingGraphService();
                     graphDatas = service.getData();
                     Memcache.put(Consts.ArtistRankingGraphData_KEY, graphDatas);
                 }
                 JSON.encode(graphDatas, this.response.getOutputStream());
             }else if("7".equals(functionCode)){//総再生回数ランキング・最新月（アーティスト別）グラフ
-                //まずはmamcacheからの読み込み
-                List<ArtistRankingGraphData> graphDatas = Memcache.get(Consts.ArtistRankingGraphData_first_KEY);
-
-                //付随データとの同期を取る
-                if(!Memcache.contains(Consts.ArtistRankingData_first_KEY)){
-                    graphDatas = null;
-                }
-
-                if(graphDatas == null){
-                    GetArtistRankingGraphService service = new GetArtistRankingGraphService();
-                    graphDatas = service.getFirstData();
-                    Memcache.put(Consts.ArtistRankingGraphData_first_KEY, graphDatas);
-                }
+            	List<ArtistRankingGraphData> graphDatas = service.getFirstData();
                 JSON.encode(graphDatas, this.response.getOutputStream());
 //            }else if("8".equals(functionCode)){//総再生回数ランキング・最新月（アーティスト別）グラフ
 //                //まずはmamcacheからの読み込み

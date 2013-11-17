@@ -46,12 +46,9 @@ public class GetArtistRankingGraphService {
     @SuppressWarnings({ "unchecked", "static-method" })
     public List<ArtistRankingGraphData> getFirstData(){
 
-        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-        List<Object> rankingList_first = (List<Object>) syncCache.get("rankingData_first");
-        if(rankingList_first == null){
-            IndexService service = new IndexService();
-            rankingList_first = service.getRankingDataByArtistFirst();
-        }
+    	IndexService service = new IndexService();
+    	List<Object> rankingList_first = service.getRankingDataByArtistFirst();
+            
         List<String> artistNameList = (List<String>) rankingList_first.get(2);
         HashMap<String, Integer> dataMap = (HashMap<String, Integer>) rankingList_first.get(3);
         List<ArtistRankingGraphData> returnList = new ArrayList<ArtistRankingGraphData>();
