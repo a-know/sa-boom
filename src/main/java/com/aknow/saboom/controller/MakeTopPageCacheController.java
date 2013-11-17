@@ -22,6 +22,7 @@ public class MakeTopPageCacheController extends Controller {
 	@Override
 	public Navigation run() throws Exception {
 
+		// // first
 		String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
 		String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
 
@@ -39,6 +40,61 @@ public class MakeTopPageCacheController extends Controller {
 
 		// put cache entity
 		DatastoreCacheUtility.put(e, e.getKey());
+		
+		// // second
+		current_month = Integer.valueOf(calendar.get(Calendar.MONTH)).toString();
+		if("0".equals(current_month)){
+			current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			current_month = "12";
+		}else{
+			current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+		}
+		//差分元となる前月情報を特定
+		pre_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
+		if("0".equals(pre_month)){
+			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			pre_month = "12";
+		}else{
+			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+		}
+		if(DatastoreCacheUtility.getOrNull(new RankingDataForTopPage(), RankingDataForTopPage.createKey(pre_year, pre_month, current_year, current_month)) == null){
+			// データが存在しない（初めて集計対象月になった）ときだけ取得＆登録
+			e = getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
+			// put cache entity
+			DatastoreCacheUtility.put(e, e.getKey());
+		}
+		
+		// // third
+		current_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();
+		if("0".equals(current_month)){
+			current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			current_month = "12";
+		}else if("-1".equals(current_month)){
+			current_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			current_month = "11";
+		}else{
+			current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+		}
+		//差分元となる前月情報を特定
+		pre_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 2).toString();
+		if("0".equals(pre_month)){
+			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			pre_month = "12";
+		}else if("-1".equals(pre_month)){
+			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			pre_month = "11";
+		}else if("-2".equals(pre_month)){
+			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			pre_month = "10";
+		}else{
+			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
+		}
+		if(DatastoreCacheUtility.getOrNull(new RankingDataForTopPage(), RankingDataForTopPage.createKey(pre_year, pre_month, current_year, current_month)) == null){
+			// データが存在しない（初めて集計対象月になった）ときだけ取得＆登録
+			e = getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
+			// put cache entity
+			DatastoreCacheUtility.put(e, e.getKey());
+		}
 
 		return null;
 	}
