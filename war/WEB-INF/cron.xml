@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-<cron>
-<url>/calcTotalPlayCountByArtist</url>
-<description>calcuration to total playcount by artist</description>
-<schedule>every day 01:35</schedule>
-<timezone>Asia/Tokyo</timezone>
-</cron>
+  <cron>
+    <url>/calcTotalPlayCountByArtist</url>
+    <description>calcuration to total playcount by artist</description>
+    <schedule>every day 01:00</schedule>
+    <timezone>Asia/Tokyo</timezone>
+    <target>small</target>
+  </cron>
   <cron>
     <url>/makeMemcache</url>
     <description>load entity into memcache</description>
     <schedule>every day 03:00</schedule>
 	<timezone>Asia/Tokyo</timezone>
-    <target>small</target> 
+    <target>small</target>
   </cron>
   <cron>
     <url>/makeTopPageCache</url>
