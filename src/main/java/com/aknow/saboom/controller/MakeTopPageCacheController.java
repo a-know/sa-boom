@@ -54,6 +54,9 @@ public class MakeTopPageCacheController extends Controller {
 		if("0".equals(pre_month)){
 			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
 			pre_month = "12";
+		}else if("-1".equals(pre_month)){
+			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR) - 1).toString();
+			pre_month = "11";
 		}else{
 			pre_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
 		}
