@@ -32,7 +32,7 @@ public class MakeMemcacheController extends Controller {
     	for(TotalPlayCountByArtist e : list){
     		if(Memcache.get(e.getKey()) == null){
                 try{
-                    Memcache.put(key, entity);
+                    Memcache.put(e.getKey(), entity);
                 }catch(Exception e){
                     UtilityMethods.sendAlertMail(this.getClass().getName(), e);
                 }
