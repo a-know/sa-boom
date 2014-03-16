@@ -12,20 +12,20 @@ import com.aknow.saboom.util.UtilityMethods;
 public class DatastoreCacheUtility {
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T getOrNull(T t, Key key){
+	public static <T> T getOrNull(T t, Key key) throws Exception{
 		T entity = Memcache.get(key);
 		if(entity == null){
 			entity = (T) Datastore.getOrNull(t.getClass(), key);
 			try{
 				Memcache.put(key, entity);
 			}catch(Exception e){
-				UtilityMethods.sendAlertMail(this.getClass().getName(), e);
+				UtilityMethods.sendAlertMail("DatastoreCacheUtility", e);
 			}
 		}
 		return entity;
 	}
 	
-	public static <T> List<T> get(T t, List<Key> keyList){
+	public static <T> List<T> get(T t, List<Key> keyList) throws Exception{
 		List<T> entityList = new ArrayList<>();
 		for(Key key : keyList){
 			entityList.add(getOrNull(t, key));
@@ -33,7 +33,7 @@ public class DatastoreCacheUtility {
 		return entityList;
 	}
 	
-	public static <T> void put(T object, Key key){
+	public static <T> void put(T object, Key key) throws Exception{
 		Datastore.put(object);
 		if(Memcache.get(key) != null){
 			Memcache.delete(key);
@@ -41,7 +41,7 @@ public class DatastoreCacheUtility {
 		try{
 			Memcache.put(key, object);
 		}catch(Exception e){
-			UtilityMethods.sendAlertMail(this.getClass().getName(), e);
+			UtilityMethods.sendAlertMail("DatastoreCacheUtility", e);
 		}
 		
 	}

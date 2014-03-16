@@ -28,13 +28,13 @@ public class MakeMemcacheController extends Controller {
         return null;
     }
     
-    private <T> void makeCache(S3QueryResultList<TotalPlayCountByArtist> list){
+    private <T> void makeCache(S3QueryResultList<TotalPlayCountByArtist> list) throws Exception {
     	for(TotalPlayCountByArtist e : list){
     		if(Memcache.get(e.getKey()) == null){
                 try{
-                    Memcache.put(e.getKey(), entity);
-                }catch(Exception e){
-                    UtilityMethods.sendAlertMail(this.getClass().getName(), e);
+                    Memcache.put(e.getKey(), e);
+                }catch(Exception ex){
+                    UtilityMethods.sendAlertMail(this.getClass().getName(), ex);
                 }
     		}
     	}

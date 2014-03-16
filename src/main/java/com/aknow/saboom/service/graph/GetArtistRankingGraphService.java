@@ -18,7 +18,7 @@ import com.google.appengine.api.datastore.Key;
 
 public class GetArtistRankingGraphService {
     @SuppressWarnings("static-method")
-    public List<ArtistRankingGraphData> getData(){
+    public List<ArtistRankingGraphData> getData() throws Exception{
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
@@ -42,7 +42,7 @@ public class GetArtistRankingGraphService {
         return returnList;
     }
     @SuppressWarnings({ "unchecked", "static-method" })
-    public List<ArtistRankingGraphData> getFirstData(){
+    public List<ArtistRankingGraphData> getFirstData() throws Exception{
 
     	IndexService service = new IndexService();
     	List<Object> rankingList_first = service.getRankingDataByArtistFirst();
@@ -63,7 +63,7 @@ public class GetArtistRankingGraphService {
         return returnList;
     }
     @SuppressWarnings({ "unchecked", "static-method" })
-    public List<ArtistRankingGraphData> getSecondData(){
+    public List<ArtistRankingGraphData> getSecondData() throws Exception{
 
     	IndexService service = new IndexService();
         List<Object> rankingList_second = service.getRankingDataByArtistSecond();
@@ -85,7 +85,7 @@ public class GetArtistRankingGraphService {
     }
     
     @SuppressWarnings({ "unchecked", "static-method" })
-    public List<ArtistRankingGraphData> getThirdData(){
+    public List<ArtistRankingGraphData> getThirdData() throws Exception{
 
     	IndexService service = new IndexService();
         List<Object> rankingList_third = service.getRankingDataByArtistThird();
