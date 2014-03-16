@@ -7,6 +7,7 @@ import org.slim3.datastore.Datastore;
 import org.slim3.memcache.Memcache;
 
 import com.google.appengine.api.datastore.Key;
+import com.aknow.saboom.util.UtilityMethods;
 
 public class DatastoreCacheUtility {
 	
@@ -15,7 +16,11 @@ public class DatastoreCacheUtility {
 		T entity = Memcache.get(key);
 		if(entity == null){
 			entity = (T) Datastore.getOrNull(t.getClass(), key);
-			Memcache.put(key, entity);
+			try{
+				Memcache.put(key, entity);
+			}catch(Exception e){
+				UtilityMethods.sendAlertMail(this.getClass().getName(), e);
+			}
 		}
 		return entity;
 	}
@@ -33,7 +38,12 @@ public class DatastoreCacheUtility {
 		if(Memcache.get(key) != null){
 			Memcache.delete(key);
 		}
-		Memcache.put(key, object);
+		try{
+			Memcache.put(key, object);
+		}catch(Exception e){
+			UtilityMethods.sendAlertMail(this.getClass().getName(), e);
+		}
+		
 	}
 
 }
