@@ -123,7 +123,7 @@ public class IndexService {
     }
 
     @SuppressWarnings("static-method")
-    public List<String> getTop10ArtistDataList(){
+    public List<String> getTop10ArtistDataList() throws Exception{
 
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
@@ -142,7 +142,7 @@ public class IndexService {
     }
 
     @SuppressWarnings("static-method")
-    public HashMap<String, Integer> getTotalPlayCountTop10Artist(List<String> top10ArtistDataList){
+    public HashMap<String, Integer> getTotalPlayCountTop10Artist(List<String> top10ArtistDataList) throws Exception{
 
         HashMap<String, Integer> map = new HashMap<String, Integer>();
 
@@ -257,7 +257,7 @@ public class IndexService {
         return Datastore.getAsync(User.class, keyList);
     }
 
-    public List<Object> getRankingDataByArtistFirst(){
+    public List<Object> getRankingDataByArtistFirst() throws Exception{
 
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) + 1).toString();
@@ -276,7 +276,7 @@ public class IndexService {
 
     }
 
-    private List<Object> getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month){
+    private List<Object> getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month) throws Exception{
 
     	RankingDataForTopPage d = DatastoreCacheUtility.getOrNull(new RankingDataForTopPage(), RankingDataForTopPage.createKey(moto_year, moto_month, saki_year, saki_month));
     	List<TotalPlayCountByArtist> sorted_list = d.getSortedList();
@@ -306,7 +306,7 @@ public class IndexService {
         return returnList;
     }
 
-    public List<Object> getRankingDataByArtistSecond(){
+    public List<Object> getRankingDataByArtistSecond() throws Exception{
 
         String current_year = null;
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH)).toString();
@@ -332,7 +332,7 @@ public class IndexService {
         return getRankingDataByArtist(current_year, current_month, pre_year, pre_month);
     }
 
-    public List<Object> getRankingDataByArtistThird(){
+    public List<Object> getRankingDataByArtistThird() throws Exception{
 
         String current_year = null;
         String current_month = Integer.valueOf(calendar.get(Calendar.MONTH) - 1).toString();

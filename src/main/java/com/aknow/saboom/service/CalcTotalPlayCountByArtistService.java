@@ -19,7 +19,7 @@ import com.aknow.saboom.util.DatastoreCacheUtility;
 
 public class CalcTotalPlayCountByArtistService {
     @SuppressWarnings("static-method")
-    public void calc(){
+    public void calc() throws Exception{
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"));
         String current_year = Integer.valueOf(calendar.get(Calendar.YEAR)).toString();

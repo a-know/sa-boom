@@ -102,7 +102,7 @@ public class MakeTopPageCacheController extends Controller {
 		return null;
 	}
 
-	private RankingDataForTopPage getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month){
+	private RankingDataForTopPage getRankingDataByArtist(String saki_year, String saki_month, String moto_year, String moto_month) throws Exception{
 
 		List<TotalPlayCountByArtist> sorted_list = new ArrayList<TotalPlayCountByArtist>();
 

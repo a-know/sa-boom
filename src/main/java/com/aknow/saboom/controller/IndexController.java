@@ -13,6 +13,7 @@ import com.aknow.saboom.model.Activity;
 import com.aknow.saboom.model.User;
 import com.aknow.saboom.service.IndexService;
 import com.aknow.saboom.util.Consts;
+import com.aknow.saboom.util.UtilityMethods;
 
 public class IndexController extends Controller {
 
@@ -79,10 +80,14 @@ public class IndexController extends Controller {
                 urlTop10Artist = apiDataTop10Artist.get(0);
                 imagesTop10Artist = apiDataTop10Artist.get(1);
 
-                Memcache.put(Consts.Top10ArtistDataListOfTotalPlayCount_KEY, top10ArtistDataList);
-                Memcache.put(Consts.Top10ArtistPlayCountDataListOfTotalPlayCount_KEY, totalPlayCountTop10Artist);
-                Memcache.put(Consts.Top10ArtistUrlDataListOfTotalPlayCount_KEY, urlTop10Artist);
-                Memcache.put(Consts.Top10ArtistImageUrlDataListOfTotalPlayCount_KEY, imagesTop10Artist);
+                try{
+                    Memcache.put(Consts.Top10ArtistDataListOfTotalPlayCount_KEY, top10ArtistDataList);
+                    Memcache.put(Consts.Top10ArtistPlayCountDataListOfTotalPlayCount_KEY, totalPlayCountTop10Artist);
+                    Memcache.put(Consts.Top10ArtistUrlDataListOfTotalPlayCount_KEY, urlTop10Artist);
+                    Memcache.put(Consts.Top10ArtistImageUrlDataListOfTotalPlayCount_KEY, imagesTop10Artist);
+                }catch(Exception e){
+                    UtilityMethods.sendAlertMail(this.getClass().getName(), e);
+                }
             }
 
             requestScope("top10ArtistDataList", top10ArtistDataList);

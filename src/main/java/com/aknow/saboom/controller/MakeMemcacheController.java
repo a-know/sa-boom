@@ -8,6 +8,7 @@ import org.slim3.memcache.Memcache;
 
 import com.aknow.saboom.meta.TotalPlayCountByArtistMeta;
 import com.aknow.saboom.model.TotalPlayCountByArtist;
+import com.aknow.saboom.util.UtilityMethods;
 
 public class MakeMemcacheController extends Controller {
 
@@ -27,10 +28,14 @@ public class MakeMemcacheController extends Controller {
         return null;
     }
     
-    private <T> void makeCache(S3QueryResultList<TotalPlayCountByArtist> list){
+    private <T> void makeCache(S3QueryResultList<TotalPlayCountByArtist> list) throws Exception {
     	for(TotalPlayCountByArtist e : list){
     		if(Memcache.get(e.getKey()) == null){
-    			Memcache.put(e.getKey(), e);
+                try{
+                    Memcache.put(e.getKey(), e);
+                }catch(Exception ex){
+                    UtilityMethods.sendAlertMail(this.getClass().getName(), ex);
+                }
     		}
     	}
     }
