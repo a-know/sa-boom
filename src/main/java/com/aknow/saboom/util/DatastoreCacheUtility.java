@@ -10,10 +10,15 @@ import com.google.appengine.api.datastore.Key;
 import com.aknow.saboom.util.UtilityMethods;
 
 public class DatastoreCacheUtility {
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> T getOrNull(T t, Key key) throws Exception{
-		T entity = Memcache.get(key);
+		T entity = null;
+		try{
+			entity = Memcache.get(key);
+		}catch(Exception e){
+			// TODO
+		}
 		if(entity == null){
 			entity = (T) Datastore.getOrNull(t.getClass(), key);
 			try{
@@ -24,7 +29,7 @@ public class DatastoreCacheUtility {
 		}
 		return entity;
 	}
-	
+
 	public static <T> List<T> get(T t, List<Key> keyList) throws Exception{
 		List<T> entityList = new ArrayList<>();
 		for(Key key : keyList){
@@ -32,10 +37,16 @@ public class DatastoreCacheUtility {
 		}
 		return entityList;
 	}
-	
+
 	public static <T> void put(T object, Key key) throws Exception{
 		Datastore.put(object);
-		if(Memcache.get(key) != null){
+		T entity = null;
+		try{
+			entity = Memcache.get(key);
+		}catch(Exception e){
+			// TODO
+		}
+		if(entity != null){
 			Memcache.delete(key);
 		}
 		try{
@@ -43,7 +54,7 @@ public class DatastoreCacheUtility {
 		}catch(Exception e){
 			UtilityMethods.sendAlertMail("DatastoreCacheUtility", e);
 		}
-		
+
 	}
 
 }
