@@ -25,7 +25,7 @@ public class IndexController extends Controller {
 
             /*新着アクティビティ一覧を非同期で取得*/
             Future<List<Activity>> activityFuture = service.getActivity();
-            
+
             /*アップロード回数順ユーザーリストの非同期取得*/
             List<User> userRankingOfUploadCountList = Memcache.get(Consts.UserRankingOfUploadCount_KEY);
             Future<List<User>> userRankingOfUploadFuture = null;
@@ -98,32 +98,32 @@ public class IndexController extends Controller {
 
             /*アーティスト別再生回数ランキング・差分情報取得*/
             //first
-            List<Object> rankingList_first = service.getRankingDataByArtistFirst();
-            requestScope("year_first", rankingList_first.get(0));
-            requestScope("month_first", rankingList_first.get(1));
-            requestScope("top10ArtistDataList_first", rankingList_first.get(2));
-            requestScope("playCountTop10Artist_first", rankingList_first.get(3));
-            requestScope("imagesTop10Artist_first", rankingList_first.get(4));
-            requestScope("urlTop10Artist_first", rankingList_first.get(5));
+            // List<Object> rankingList_first = service.getRankingDataByArtistFirst();
+            // requestScope("year_first", rankingList_first.get(0));
+            // requestScope("month_first", rankingList_first.get(1));
+            // requestScope("top10ArtistDataList_first", rankingList_first.get(2));
+            // requestScope("playCountTop10Artist_first", rankingList_first.get(3));
+            // requestScope("imagesTop10Artist_first", rankingList_first.get(4));
+            // requestScope("urlTop10Artist_first", rankingList_first.get(5));
 
 
             //second
-            List<Object> rankingList_second = service.getRankingDataByArtistSecond();
-            requestScope("year_second", rankingList_second.get(0));
-            requestScope("month_second", rankingList_second.get(1));
-            requestScope("top10ArtistDataList_second", rankingList_second.get(2));
-            requestScope("playCountTop10Artist_second", rankingList_second.get(3));
-            requestScope("imagesTop10Artist_second", rankingList_second.get(4));
-            requestScope("urlTop10Artist_second", rankingList_second.get(5));
+            // List<Object> rankingList_second = service.getRankingDataByArtistSecond();
+            // requestScope("year_second", rankingList_second.get(0));
+            // requestScope("month_second", rankingList_second.get(1));
+            // requestScope("top10ArtistDataList_second", rankingList_second.get(2));
+            // requestScope("playCountTop10Artist_second", rankingList_second.get(3));
+            // requestScope("imagesTop10Artist_second", rankingList_second.get(4));
+            // requestScope("urlTop10Artist_second", rankingList_second.get(5));
 
             //third
-            List<Object> rankingList_third = service.getRankingDataByArtistThird();
-            requestScope("year_third", rankingList_third.get(0));
-            requestScope("month_third", rankingList_third.get(1));
-            requestScope("top10ArtistDataList_third", rankingList_third.get(2));
-            requestScope("playCountTop10Artist_third", rankingList_third.get(3));
-            requestScope("imagesTop10Artist_third", rankingList_third.get(4));
-            requestScope("urlTop10Artist_third", rankingList_third.get(5));
+            // List<Object> rankingList_third = service.getRankingDataByArtistThird();
+            // requestScope("year_third", rankingList_third.get(0));
+            // requestScope("month_third", rankingList_third.get(1));
+            // requestScope("top10ArtistDataList_third", rankingList_third.get(2));
+            // requestScope("playCountTop10Artist_third", rankingList_third.get(3));
+            // requestScope("imagesTop10Artist_third", rankingList_third.get(4));
+            // requestScope("urlTop10Artist_third", rankingList_third.get(5));
 
             /*登録済みユーザー数の取得*/
             Integer userCount = Memcache.get(Consts.TotalUserCount_KEY);
@@ -131,7 +131,7 @@ public class IndexController extends Controller {
                 userCount = service.getUserCount();
             }
             requestScope("userCount", userCount);
-            
+
             // // 各エンティティを非同期で取得
             // activity
             requestScope("activityList", activityFuture.get());
@@ -148,7 +148,7 @@ public class IndexController extends Controller {
                 Memcache.put(Consts.UserRankingOfDiaryCount_KEY, userRankingOfDiaryCountList);
             }
             requestScope("userRankingOfDiaryCount", userRankingOfDiaryCountList);
-            
+
         }catch(Exception e){
             e.printStackTrace();
 
