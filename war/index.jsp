@@ -426,7 +426,7 @@ div.content {
                   <div align="right"><span class="help-block">このグラフは、不定期間隔で更新されます。</span></div>
                 </div>
             </div>
-            <d iv class="section-orange">
+            <div class="section-orange">
               <div class="heading">
               <h3>再生回数ランキング＜アーティスト・サブーン内全体＞</h3>
               </div>
@@ -434,9 +434,6 @@ div.content {
 
                 <ul class="tabs" data-tabs="tabs">
                     <li class="active"><a href="#total">総合</li>
-                    <li><a href="#first" id="firstTab"><c:out value="${year_first}"/>年<c:out value="${month_first}"/>月度</a></li>
-                    <li><a href="#second" id="secondTab"><c:out value="${year_second}"/>年<c:out value="${month_second}"/>月度</a></li>
-                    <li><a href="#third" id="thirdTab"><c:out value="${year_third}"/>年<c:out value="${month_third}"/>月度</a></li>
                 </ul>
 
                 <div id="my-tab-content" class="tab-content">
