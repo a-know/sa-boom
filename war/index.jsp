@@ -426,7 +426,7 @@ div.content {
                   <div align="right"><span class="help-block">このグラフは、不定期間隔で更新されます。</span></div>
                 </div>
             </div>
-            <div class="section-orange">
+            <d iv class="section-orange">
               <div class="heading">
               <h3>再生回数ランキング＜アーティスト・サブーン内全体＞</h3>
               </div>
@@ -451,17 +451,17 @@ div.content {
                             <c:if test="${urlTop10Artist[artistName] == ''}" var="flgUrl" /><c:if test="${flgUrl}" ><img src="<c:out value="${imagesTop10Artist[artistName]}"/>"></c:if><c:if test="${!flgUrl}" ><a href="<c:out value="${urlTop10Artist[artistName]}"/>"><img src="<c:out value="${imagesTop10Artist[artistName]}"/>"></a></c:if><br><c:out value="${artistName}"/><br><c:out value="${playCountTop10Artist[artistName]}"/> Hits
                           </div>
                           <c:if test="${status.index == 4}">
-                      </div><!-- /row -->
+                      </div>
                       <div class="row">
                           </c:if>
                           <c:if test="${status.index == 9}">
-                      </div><!-- /row -->
+                      </div>
                           </c:if>
                         </c:forEach>
                     <div align="right"><span class="help-block">ランキングは、一日に一回、更新されます。</span></div>
                   </div>
 
-                  <div class="tab-pane" id="first">
+                  <!--<div class="tab-pane" id="first">
                     <br>
                     <div id='graph_TotalPlayCountRanking_Artist_first' style='width:500px; height:600px; display:none;'></div>
                     <div align="right"><span class="help-block">グラフをクリックすると、そのアーティストの検索ページに移動します。</span></div>
@@ -520,7 +520,7 @@ div.content {
                       </div>
                           </c:if>
                         </c:forEach>
-                  </div>
+                  </div> -->
                 </div>
             </div>
           </div>
