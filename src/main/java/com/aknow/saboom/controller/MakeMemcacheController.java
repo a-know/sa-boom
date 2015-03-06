@@ -16,10 +16,10 @@ public class MakeMemcacheController extends Controller {
     public Navigation run() throws Exception {
 
         TotalPlayCountByArtistMeta meta = new TotalPlayCountByArtistMeta();
-        
+
         S3QueryResultList<TotalPlayCountByArtist> list = Datastore.query(meta).limit(1000).asQueryResultList();
         makeCache(list);
-        
+
         while(list.hasNext()){
         	String cursor = list.getEncodedCursor();
         	list = Datastore.query(meta).encodedStartCursor(cursor).limit(1000).asQueryResultList();
@@ -27,10 +27,17 @@ public class MakeMemcacheController extends Controller {
         }
         return null;
     }
-    
+
     private <T> void makeCache(S3QueryResultList<TotalPlayCountByArtist> list) throws Exception {
+        Object o = null;
     	for(TotalPlayCountByArtist e : list){
-    		if(Memcache.get(e.getKey()) == null){
+            o = null;
+            try{
+                o = Memcache.get(e.getKey());
+            }catch(Exception ee){
+                // TODO
+            }
+    		if(o == null){
                 try{
                     Memcache.put(e.getKey(), e);
                 }catch(Exception ex){

@@ -98,7 +98,7 @@ public class UtilityMethods {
 
         return true;
     }
-    
+
     public static Exception sendAlertMail(String className, Exception e) throws IOException{
         Message message = new Message();
         message.setSender(PrivateConsts.ALERT_MAIL_SENDER);
@@ -108,8 +108,8 @@ public class UtilityMethods {
         message.setTextBody(e.toString() + "\n" + e.getMessage());
 
         MailService mailService = MailServiceFactory.getMailService();
-        mailService.send(message);
-        
+        // mailService.send(message);
+
         return e;
     }
 }
