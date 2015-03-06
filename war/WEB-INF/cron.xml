@@ -14,11 +14,4 @@
 	<timezone>Asia/Tokyo</timezone>
     <target>small</target>
   </cron>
-  <cron>
-    <url>/makeTopPageCache</url>
-    <description>load entity cache into datastore</description>
-    <schedule>every day 02:00</schedule>
-	<timezone>Asia/Tokyo</timezone>
-    <target>small</target> 
-  </cron>
 </cronentries>
