@@ -458,7 +458,7 @@ div.content {
                     <div align="right"><span class="help-block">ランキングは、一日に一回、更新されます。</span></div>
                   </div>
 
-                  <!--<div class="tab-pane" id="first">
+                  <div class="tab-pane" id="first">
                     <br>
                     <div id='graph_TotalPlayCountRanking_Artist_first' style='width:500px; height:600px; display:none;'></div>
                     <div align="right"><span class="help-block">グラフをクリックすると、そのアーティストの検索ページに移動します。</span></div>
@@ -517,7 +517,7 @@ div.content {
                       </div>
                           </c:if>
                         </c:forEach>
-                  </div> -->
+                  </div>
                 </div>
             </div>
           </div>
